@@ -11,6 +11,13 @@ A lightweight media server for Remotion projects that helps manage media assets 
 
 ## Install
 
+### Quick Install (macOS/Linux)
+
+```bash
+# Download to current directory
+curl -fsSL https://raw.githubusercontent.com/hylarucoder/revid-serve/main/install.sh | bash
+```
+
 ### Manual Install
 
 If you prefer not to use the automatic installation script, you can download and install manually:
