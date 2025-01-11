@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directory Listing - {{.Path}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .path {
+            color: #666;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .list {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            text-decoration: none;
+            color: #333;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item:hover {
+            background: #f8f9fa;
+        }
+        .icon {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .name {
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+        .size {
+            color: #666;
+            font-size: 0.9em;
+            min-width: 100px;
+            text-align: right;
+        }
+        .up {
+            color: #666;
+        }
+        @media (max-width: 600px) {
+            .size {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Directory Listing</h1>
+        <div class="path">{{.Path}}</div>
+    </div>
+    <div class="list">
+        {{if ne .Path "/"}}
+        <a href="../" class="item up">
+            <div class="icon">↑</div>
+            <div class="name">..</div>
+            <div class="size"></div>
+        </a>
+        {{end}}
+        {{range .Dirs}}
+        <a href="{{.Name}}/" class="item">
+            <div class="icon">📁</div>
+            <div class="name">{{.Name}}</div>
+            <div class="size"></div>
+        </a>
+        {{end}}
+        {{range .Files}}
+        <a href="{{.Name}}" class="item">
+            <div class="icon">📄</div>
+            <div class="name">{{.Name}}</div>
+            <div class="size">{{.Size}}</div>
+        </a>
+        {{end}}
+    </div>
+</body>
+</html>
