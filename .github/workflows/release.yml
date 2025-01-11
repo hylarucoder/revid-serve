@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 触发标签格式为 v1.0.0
+
+permissions:
+  contents: write # 需要写入权限来创建 release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Build
+        run: |
+          mkdir -p build
+          # Build for various platforms
+          GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "-w -s -X main.Version=${{ env.VERSION }}" -o build/revid-serve-darwin-amd64
+          GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "-w -s -X main.Version=${{ env.VERSION }}" -o build/revid-serve-darwin-arm64
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s -X main.Version=${{ env.VERSION }}" -o build/revid-serve-linux-amd64
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "-w -s -X main.Version=${{ env.VERSION }}" -o build/revid-serve-linux-arm64
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-w -s -X main.Version=${{ env.VERSION }}" -o build/revid-serve-windows-amd64.exe
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: false
+          files: |
+            build/revid-serve-darwin-amd64
+            build/revid-serve-darwin-arm64
+            build/revid-serve-linux-amd64
+            build/revid-serve-linux-arm64
+            build/revid-serve-windows-amd64.exe
+          body: |
+            ## revid-serve ${{ env.VERSION }}
+
+            ### 使用方法
+            ```bash
+            # 启动服务器
+            ./revid-serve -d <directory>
+
+            # 指定端口
+            ./revid-serve -d <directory> -p 8080
+            ```
+
+            ### 下载
+            - macOS (Intel): `revid-serve-darwin-amd64`
+            - macOS (Apple Silicon): `revid-serve-darwin-arm64`
+            - Linux (x64): `revid-serve-linux-amd64`
+            - Linux (ARM64): `revid-serve-linux-arm64`
+            - Windows: `revid-serve-windows-amd64.exe`

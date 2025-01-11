@@ -1,35 +1,51 @@
 # revid-serve
 
-When creating numerous Remotion templates, bundling a large amount of media in `./public` directory to assets can become cumbersome. This is because each time you bundle, all the media in the public folder is included in the final bundle assets, causing the bundle size to grow continuously.
+A lightweight media server for Remotion projects that helps manage media assets outside of the bundle.
 
-To address this issue and improve the developer experience (DX), we've created a simple tool that offers a solution similar to the existing workflow.
+## Why?
 
-With this tool, you can:
+- Keep your Remotion bundle size small
+- Manage media files separately from your bundle
+- Simple and efficient media serving
+- No need to bundle large media files in `./public`
 
-1. Store your media files in the `./media` folder instead of `./public`.
-2. Use the `mediaFile` utility function in place of `staticFile`.
+## Install
 
-This approach allows for more efficient media management and helps keep your bundle size under control.
-
-(Please ensure you maintain the proper indentation when implementing this in your code.)
-
-
-
-```ts
-function mediaFile(path: string) {
-    // change to your media server base url
-    return `http://localhost:8080/${path}`;
-}
+### Quick Install (macOS/Linux)
+```bash
+# Download to current directory
+curl -fsSL https://raw.githubusercontent.com/hylarucoder/revid-serve/main/install.sh | bash
 ```
+
+### Manual Install
+
+If you prefer not to use the automatic installation script, you can download and install manually:
+
+1. Visit the [Releases](https://github.com/hylarucoder/revid-serve/releases/latest) page
+2. Download the version for your system
+3. Rename and make it executable:
+   ```bash
+   mv revid-serve-* revid-serve
+   chmod +x revid-serve
+   ```
 
 ## Usage
 
 1. Start the media server:
-```bash
-revid-serve -d ./media
-```
+   ```bash
+   ./revid-serve -d ./media
+   ```
 
-2. Use the `mediaFile` function in your code:
-```ts
-// Example
-const video = mediaFile('videos/intro.mp4');
+2. Add the `mediaFile` utility function:
+   ```ts
+   function mediaFile(path: string) {
+       // change to your media server base url
+       return `http://localhost:8080/${path}`;
+   }
+   ```
+
+3. Use it in your code:
+   ```ts
+   const video = mediaFile('videos/intro.mp4');
+   const image = mediaFile('images/background.png');
+   ```

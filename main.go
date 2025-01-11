@@ -24,6 +24,8 @@ var webContent embed.FS
 var (
 	port int
 	dir  string
+	// Version information (set by build flag)
+	Version = "dev"
 )
 
 // FileInfo represents a file or directory for the template
@@ -238,7 +240,7 @@ func serve(cmd *cobra.Command, args []string) error {
 
 	// Start server
 	addr := fmt.Sprintf(":%d", port)
-	log.Info().Msgf("Starting server... 🚀")
+	log.Info().Msgf("Starting server... ")
 	log.Info().
 		Msgf("Server is running at http://localhost:%d", port)
 
@@ -254,19 +256,29 @@ func main() {
 	})
 
 	rootCmd := &cobra.Command{
-		Use:   "revid-serve [flags] -d directory",
-		Short: "A simple static file server",
+		Use:     "revid-serve -d <directory>",
+		Version: Version,
+		Short:   "A simple static file server",
 		Long: `revid-serve is a secure static file server.
-You must specify a directory to serve using the -d or --dir flag.`,
+
+Example:
+  revid-serve -d ./media     Serve files from ./media directory
+  revid-serve -d . -p 8080   Serve current directory on port 8080`,
+		Example: `  revid-serve -d ./media
+  revid-serve -d . -p 8080`,
 		RunE: serve,
 	}
 
 	// Add command line flags
-	rootCmd.Flags().IntVarP(&port, "port", "p", 8080, "Server port number")
+	rootCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port number (default: 8080)")
 	rootCmd.Flags().StringVarP(&dir, "dir", "d", "", "Directory to serve (required)")
 	rootCmd.MarkFlagRequired("dir")
 
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatal().Err(err).Msg("Failed to execute command")
+		if err.Error() == "required flag(s) \"dir\" not set" {
+			log.Fatal().Msg("Error: Directory is required. Use -d flag to specify a directory to serve.\nExample: revid-serve -d ./media")
+		} else {
+			log.Fatal().Err(err).Msg("Failed to execute command")
+		}
 	}
 }
